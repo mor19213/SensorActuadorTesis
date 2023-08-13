@@ -6,7 +6,7 @@ const char* ssid = "Pellecer_Inadria";
 const char* password = "fans1234";
 const char* udpServerIP = "192.168.0.122"; // Replace with the IP address of your UDP server
 const int udpServerPort = 5005; // IP del gw
-const int ledPin = 4; // digital output pin
+const int ledPin = 23; // digital output pin
 unsigned long previousMillis = 0;
 const unsigned long interval = 4000; // 0.4 seconds
 
@@ -15,7 +15,7 @@ StaticJsonDocument<200> jsonDoc;
 String jsonString;
 bool value;
 String msg;
-String actuadorName = "led"; 
+String actuadorName = "led azul"; 
 
 void setup() {
   Serial.begin(115200);

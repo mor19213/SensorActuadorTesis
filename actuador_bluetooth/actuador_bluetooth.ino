@@ -1,4 +1,5 @@
 #include "BluetoothSerial.h"
+#include <ArduinoJson.h>
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to enable it
@@ -7,30 +8,22 @@
 const int ledPin = 23;
 
 BluetoothSerial SerialBT;
+String receivedString = "";
+StaticJsonDocument<200> jsonDoc;
+String msg;
 
-// Define an array of strings to be sent when a device connects
-const char* stringsToSend[] = {
-  "sensor/joystick y",
-  "sensor/joystick x",
-  "actuador/led",
-  "actuador/led amarillo"
-};
 
 void onBTConnect(esp_spp_cb_event_t event, esp_spp_cb_param_t* param) {
   if (event == ESP_SPP_SRV_OPEN_EVT) {
     // Send the array of strings when a device connects
-    for (const char* str : stringsToSend) {
-    SerialBT.print(str);
-    SerialBT.print(",");
-    //delay(100); // Add a delay between sending each string
-  }
+    SerialBT.println("Conectado"); // Sending newline for clarity
   }
 }
 
 void setup() {
   Serial.begin(115200);
   pinMode(ledPin, OUTPUT);
-  SerialBT.begin("sensorasdfactuador"); // Bluetooth device name
+  SerialBT.begin("DispEspActuador"); // Bluetooth device name
   Serial.println("The device started, now you can pair it with bluetooth!");
 
   SerialBT.register_callback(onBTConnect);
@@ -40,16 +33,40 @@ void loop() {
   digitalWrite(ledPin, HIGH);
 
   // Forward data from Serial to SerialBT
-  if (Serial.available()) {
-    SerialBT.write(Serial.read());
-  }
+  SerialBT.println("actuador/led amarillo\n"); // Sending newline for clarity
 
   // Forward data from SerialBT to Serial
-  if (SerialBT.available()) {
-    Serial.write(SerialBT.read());
+  while (SerialBT.available()) {
+    char data = SerialBT.read();
+    receivedString += data;
+    
+  }
+  if (!receivedString.isEmpty()) {
+    Serial.println("Received: " + receivedString);
+     DeserializationError error = deserializeJson(jsonDoc, receivedString); 
+      if (error) {
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
+        return;
+      }
+      // Extract the value from the JSON payload
+      if (jsonDoc.containsKey("valor")) {
+        msg = jsonDoc["valor"].as<String>();
+        Serial.print("Received value: ");
+        Serial.println(msg);
+        
+        if (msg == "True") {
+          // Turn on the LED
+          digitalWrite(ledPin, HIGH);
+          Serial.println("LED turned on");
+        } else {
+          digitalWrite(ledPin, LOW);
+          Serial.println("LED turned off");
+        }
+      }
+
+    receivedString = ""; // Clear the received string
   }
 
-  delay(20);
-  digitalWrite(ledPin, LOW);
-  delay(20);
+  delay(3000);
 }
