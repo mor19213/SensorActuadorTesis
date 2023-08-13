@@ -8,7 +8,7 @@ const int udpServerPort = 5005; // Replace with the port number of your UDP serv
 
 const int analogPin = 34;
 int potValue;
-String sensorName = "temperatura"; 
+String sensorName = "sensor2"; 
 
 WiFiUDP udp;
 
@@ -40,5 +40,5 @@ void loop() {
   udp.endPacket();
 
 
-  delay(1000); // Send UDP datagram every 5 seconds
+  delay(4000); // Send UDP datagram every 5 seconds
 }
