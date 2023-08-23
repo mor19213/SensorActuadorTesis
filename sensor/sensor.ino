@@ -59,9 +59,9 @@ void loop() {
 
   jsonDoc["valor"] = String(potValue);
   serializeJson(jsonDoc, jsonString);
-  client.publish("sensor/temperatura", jsonString.c_str());
+  client.publish("sensor/sensor3", jsonString.c_str());
   Serial.println(jsonString);
 
   jsonString = "";
-  delay(800);
+  delay(2000);
 }

@@ -5,7 +5,7 @@
 const char* ssid = "Pellecer_Inadria";
 const char* password = "fans1234";
 const char* mqtt_server = "192.168.0.122"; // IP del gw
-const int ledPin = 4; // digital output pin
+const int ledPin = 23; // digital output pin
 unsigned long previousMillis = 0;
 const unsigned long interval = 800; // 0.4 seconds
 
@@ -67,7 +67,7 @@ void setup() {
     Serial.print("Connecting to MQTT broker...");
     if (client.connect("ESP32Client")) {
       Serial.println("connected!");
-      client.subscribe("actuador/led", 0);
+      client.subscribe("actuador/led verde", 0);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
